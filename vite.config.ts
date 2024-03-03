@@ -21,6 +21,8 @@ export default defineConfig({
 				format: "iife",
 			},
 		},
+
+		outDir: "./docs",
 	},
 	worker: {
 		plugins: [polyfillKaiOS()],

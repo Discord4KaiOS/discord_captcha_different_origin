@@ -1,35 +1,48 @@
-import { useEffect, useState } from "preact/hooks";
-import preactLogo from "./assets/preact.svg";
-import viteLogo from "/vite.svg";
-import "./app.css";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
+import { useRef, useState, useEffect } from "preact/hooks";
 
 export function App() {
-	const [count, setCount] = useState(0);
+	const [state, setState] = useState("");
+	const captchaRef = useRef<HCaptcha>(null);
+
+	const onExpire = () => {
+		setState("hCaptcha Token Expired");
+	};
+
+	const onError = (err: any) => {
+		setState(`hCaptcha Error: ${err}`);
+	};
 
 	useEffect(() => {
-		const handle = () => setCount((count) => count + 1);
-		window.addEventListener("keydown", handle);
-		return () => window.removeEventListener("keydown", handle);
+		// this reaches out to the hcaptcha library and runs the
+		// execute function on it. you can use other functions as well
+		// documented in the api:
+		// https://docs.hcaptcha.com/configuration#jsapi
+		captchaRef.current!.execute();
 	}, []);
 
 	return (
-		<>
-			<div>
-				<a href="https://vitejs.dev" target="_blank">
-					<img src={viteLogo} class="logo" alt="Vite logo" />
-				</a>
-				<a href="https://preactjs.com" target="_blank">
-					<img src={preactLogo} class="logo preact" alt="Preact logo" />
-				</a>
-			</div>
-			<h1>Vite + Preact</h1>
-			<div class="card">
-				<button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-				<p>
-					Edit <code>src/app.tsx</code> and save to test HMR
-				</p>
-			</div>
-			<p class="read-the-docs">Click on the Vite and Preact logos to learn more</p>
-		</>
+		<div>
+			<HCaptcha
+				// This is testing sitekey, will autopass
+				// Make sure to replace
+				sitekey="f5561ba9-8f1e-40ca-9b5b-a0b3f719ef34"
+				size="normal"
+				onVerify={(token, ekey) => {
+					setState("verified!");
+					console.log("token:", token);
+					console.log("ekey:", ekey);
+
+					window.opener.postMessage("captcha_verified_token:" + token, "*");
+					window.opener.postMessage("captcha_verified_ekey:" + ekey, "*");
+				}}
+				onError={onError}
+				onExpire={onExpire}
+				ref={captchaRef}
+				// @ts-ignore
+				host="discord.com"
+			/>
+			<div>{state}</div>
+		</div>
 	);
 }
