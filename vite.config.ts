@@ -9,6 +9,14 @@ export default defineConfig({
 	server: {
 		port: 3000,
 	},
+	resolve: {
+		alias: {
+			react: "preact/compat",
+			"react-dom/test-utils": "preact/test-utils",
+			"react-dom": "preact/compat", // Must be below test-utils
+			"react/jsx-runtime": "preact/jsx-runtime",
+		},
+	},
 	build: {
 		target: "es6",
 		cssTarget: "firefox48",

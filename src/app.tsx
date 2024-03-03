@@ -22,12 +22,12 @@ export function App() {
 	}, []);
 
 	return (
-		<div>
+		<>
 			<HCaptcha
 				// This is testing sitekey, will autopass
 				// Make sure to replace
 				sitekey="f5561ba9-8f1e-40ca-9b5b-a0b3f719ef34"
-				size="normal"
+				size="compact"
 				onVerify={(token, ekey) => {
 					setState("verified!");
 					console.log("token:", token);
@@ -43,6 +43,6 @@ export function App() {
 				host="discord.com"
 			/>
 			<div>{state}</div>
-		</div>
+		</>
 	);
 }
