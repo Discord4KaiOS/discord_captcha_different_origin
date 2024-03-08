@@ -1,6 +1,8 @@
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { useRef, useState, useEffect } from "preact/hooks";
 
+const prefix = "captcha_verified_";
+
 export function App() {
 	const [state, setState] = useState("");
 	const captchaRef = useRef<HCaptcha>(null);
@@ -26,15 +28,16 @@ export function App() {
 			<HCaptcha
 				// This is testing sitekey, will autopass
 				// Make sure to replace
-				sitekey="f5561ba9-8f1e-40ca-9b5b-a0b3f719ef34"
+				// this is the site-key found in discord request
+				sitekey={location.hash.slice(1) || "f5561ba9-8f1e-40ca-9b5b-a0b3f719ef34"}
 				size="compact"
 				onVerify={(token, ekey) => {
 					setState("verified!");
 					console.log("token:", token);
 					console.log("ekey:", ekey);
 
-					window.opener.postMessage("captcha_verified_token:" + token, "*");
-					window.opener.postMessage("captcha_verified_ekey:" + ekey, "*");
+					window.opener.postMessage(prefix + "token:" + token, "*");
+					window.opener.postMessage(prefix + "ekey:" + ekey, "*");
 				}}
 				onError={onError}
 				onExpire={onExpire}
